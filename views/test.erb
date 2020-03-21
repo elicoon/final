@@ -1,1 +1,80 @@
+<h1>Welcome to your polling place.</h1>
+
 <%= pp @poll %>
+
+<br><br>
+
+Your address:
+
+<br>
+
+Polling Location: <%= @poll[:polling_name] %>
+
+<br>
+
+Polling Location Address: <%= @poll[:polling_address] %>
+
+<br>
+
+Accessible? <%= @poll[:accessible] %>
+
+<br>
+
+Township & Precinct: <%= @poll[:township] %>
+
+<br>
+
+Last reported wait time: 
+
+<br>
+
+Avg reported wait time:
+
+<br>
+
+Issues reported:
+
+<br><br>
+<form action="/polling_locations/<%=@poll[:id]%>/time/create" method="post">
+<div class="form-group">
+    <label for="exampleFormControlSelect1">MY wait time is:</label>
+    <select class="form-control" id="exampleFormControlSelect1" name="line_time">
+      <option value="5">5</option>
+      <option value="10">10</option>
+      <!-- <option>15</option>
+      <option>20</option>
+      <option>25</option>
+      <option>30</option>
+      <option>35</option>
+      <option>40</option>
+      <option>45</option>
+      <option>50</option>
+      <option>55</option>
+      <option>60</option> -->
+    </select>
+    minutes.
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+</form>
+
+  <br><br>
+Report an Issue
+<form>
+<div class="form-group">
+    <label for="exampleFormControlSelect1">Issue Type</label>
+    <select class="form-control" id="exampleFormControlSelect1" name="issue_type">
+      <option>Voter Intimidation</option>
+      <option>Registration</option>
+      <option>Misinformation</option>
+      <option>Sanitation</option>
+      <option>Other - specify below</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="exampleFormControlTextarea1">Issue Details</label>
+    <textarea class="form-control" id="exampleFormControlTextarea1" name="issue_details" rows="3"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<br> <br>

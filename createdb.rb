@@ -14,14 +14,14 @@ DB.create_table! :polling_locations do
 end
 DB.create_table! :polling_times do
   primary_key :id
-  foreign_key :polling_name_id
+  foreign_key :polling_location_id
   String :voter_address
-  String :line_time
+  Integer :line_time
   String :date_time_reported
 end
 DB.create_table! :polling_issues do
   primary_key :id
-  foreign_key :polling_name_id
+  foreign_key :polling_location_id
   String :voter_address
   String :issue_type
   String :issue_text, text: true

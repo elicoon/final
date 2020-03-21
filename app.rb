@@ -5,7 +5,8 @@ require "sequel"                                                                
 require "logger"                                                                      #
 require "twilio-ruby"                                                                 #
 require "bcrypt"
-require "httparty"                                                                    #
+require "httparty"
+require "time"                                                                        #
 connection_string = ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/development.sqlite3"  #
 DB ||= Sequel.connect(connection_string)                                              #
 DB.loggers << Logger.new($stdout) unless DB.loggers.size > 0                          #
@@ -22,9 +23,9 @@ users_table = DB.from(:users)
 
 #setting the user's session (aka encrypted cookie)
 #good to go (I think)
-before do
-    @current_user = users_table.where(id: session["user_id"]).to_a[0]
-end
+# before do
+#     @current_user = users_table.where(id: session["user_id"]).to_a[0]
+# end
 
 #enabling Twilio with environmental variables
 #NEEDTOFIX -> 
@@ -63,6 +64,9 @@ puts "params: #{params}"
             @ad_line2_array = @ad_line2.split(/\W+/)
             @full_ad_array = @ad_line1_array + @ad_line2_array << @user_city << @user_state << @user_zip
 
+            @address_cookie = "#{@full_ad_array.join(" ")}"
+            #cookies["address"] = "#{@address_cookie}"
+
             #converting to civic api-friendly format
             @civic_api_address_format = "#{@full_ad_array.join("%20")}"
 
@@ -85,7 +89,10 @@ puts "params: #{params}"
             polling_name: "New polling location",
             polling_address: "#{@poll_place_address_line1}"
         )
-        redirect "polling_locations/#{@new_polling_location[:id]}" 
+        puts "#{@new_polling_location} this is the text to reference"
+        if @new_polling_location
+            redirect "polling_locations/#{@new_polling_location[:id]}" 
+        end
     end
 end
 
@@ -94,9 +101,25 @@ end
 get "/polling_locations/:id" do
     puts "params: #{params}"
 
-    @poll = polling_locations_table.where(id: params[:id]).to_a
+    @poll = polling_locations_table.where(id: params[:id]).to_a[0]
     pp @poll
 
+    view "test"
+end
+
+post "/polling_locations/:id/time/create" do
+    puts "para: #{params}"
+    puts Time.now.to_i
+    #first, find the polling location we want to create an entry for
+    @poll = polling_locations_table.where(id: params[:id]).to.a[0]
+
+    polling_times_table.insert(
+        polling_location_id: @poll[:id],
+        #voter_address: cookies
+        line_time: params["line_time"],
+        date_time_reported: Time.now.to_i
+    )
+    
     view "test"
 end
 
