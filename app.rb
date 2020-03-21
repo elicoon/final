@@ -50,38 +50,62 @@ end
 get "/polling_location" do
 #create a new route here that is taking the user's address and then matching/creating the polling location
 puts "params: #{params}"
-@user_address = params["q"]
+# @user_address = params["q"]
 
-#array of the words in the first line
-@ad_line1=params["ad_line1"]
-@ad_line2=params["ad_line2"]
-@user_city=params["inputCity"]
-@user_state=params["inputState"]
-@user_zip=params["inputZip"]
+        #array of the words in the first line. Have to do this because the google civics api is finicky
+        @ad_line1=params["ad_line1"]
+        @ad_line2=params["ad_line2"]
+        @user_city=params["inputCity"]
+        @user_state=params["inputState"]
+        @user_zip=params["inputZip"]
 
-@ad_line1_array = @ad_line1.split(/\W+/)
-@ad_line2_array = @ad_line2.split(/\W+/)
-@full_ad_array = @ad_line1_array + @ad_line2_array << @user_city << @user_state << @user_zip
-@civic_api_address_format = "#{@full_ad_array.join("%20")}"
+            #separating user entries into individual arrays of words and combining the arrays
+            @ad_line1_array = @ad_line1.split(/\W+/)
+            @ad_line2_array = @ad_line2.split(/\W+/)
+            @full_ad_array = @ad_line1_array + @ad_line2_array << @user_city << @user_state << @user_zip
 
-@googlecivic_sid = ENV["GOOGLE_CIVIC_SID"]
-googleurl="https://www.googleapis.com/civicinfo/v2/voterinfo?address=#{@civic_api_address_format}&electionId=2000&key=#{@googlecivic_sid}"
+            #converting to civic api-friendly format
+            @civic_api_address_format = "#{@full_ad_array.join("%20")}"
 
-response = HTTParty.get(googleurl).parsed_response.to_hash
-@poll_place_address_line1 = response["pollingLocations"][0]["address"]["line1"]
+            #feeding to the google civic api, assuming electionID of 2000
+            @googlecivic_sid = ENV["GOOGLE_CIVIC_SID"]
+            googleurl="https://www.googleapis.com/civicinfo/v2/voterinfo?address=#{@civic_api_address_format}&electionId=2000&key=#{@googlecivic_sid}"
+
+        response = HTTParty.get(googleurl).parsed_response.to_hash
+        @poll_place_address_line1 = response["pollingLocations"][0]["address"]["line1"]
+        @full_response = response
 
 
-# google_polling_address = 
+    #check if there's already a polling place with this address and adding a new entry to the database if it doesn't find a match
+    @existing_polling_location = polling_locations_table.where(polling_address: @poll_place_address_line1).to_a[0]
+    if @existing_polling_location
+        view "polling_location"
+    else
+        polling_locations_table.insert(
+            polling_name: "New polling location",
+            polling_address: "#{@poll_place_address_line1}"
+        )
+        view "polling_location"
+    end
+end
 
-# existing_polling_location = polling_location_table.where(polling_address)
+
 
 #next, redirect to the show page because now we have the location id
 #think of this similarly to the users create from class 10
 #one option to keep the variable is to pass it through the URL with q
 #another option is to save it as a cookie and set a cookie to the address value
 
-view "polling_location"
-end
+# view "polling_location"
+# end
+
+get "/polling_locations/:id" do
+    puts "params #{params}"
+
+    @users_table = users_table
+    @polling_location 
+
+view
 
 
 
