@@ -78,22 +78,22 @@ puts "params: #{params}"
     #check if there's already a polling place with this address and adding a new entry to the database if it doesn't find a match
     @existing_polling_location = polling_locations_table.where(polling_address: @poll_place_address_line1).to_a[0]
     if @existing_polling_location
-        view "polls/#{@existing_polling_location[:id]}" #this is what's currently breaking
+        view "polling_locations" #this is what's currently breaking
+        #view "polling_locations/#{@existing_polling_location[:id]}" 
     else
         polling_locations_table.insert(
             polling_name: "New polling location",
             polling_address: "#{@poll_place_address_line1}"
         )
-        view "polls/#{@existing_polling_location[:id]}" #this is also probably breaking
-    end
+        view "polling_locations" 
 end
 
 
 #this appears to be broken based based on the errors i'm getting
-get "/polls/:id" do
+get "/polling_locations/:id" do
     puts "params: #{params}"
 
-    @poll = polling_locations_table.where(id: params[:id]).to_a[0]
+    @poll = polling_locations_table.where(id: params[:id]).to_a
     pp @poll
 
     view "test"
