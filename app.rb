@@ -78,14 +78,15 @@ puts "params: #{params}"
     #check if there's already a polling place with this address and adding a new entry to the database if it doesn't find a match
     @existing_polling_location = polling_locations_table.where(polling_address: @poll_place_address_line1).to_a[0]
     if @existing_polling_location
-        view "polling_locations" #this is what's currently breaking
+        redirect "polling_locations/#{@existing_polling_location[:id]}" #this is what's currently breaking
         #view "polling_locations/#{@existing_polling_location[:id]}" 
     else
-        polling_locations_table.insert(
+        @new_polling_location = polling_locations_table.insert(
             polling_name: "New polling location",
             polling_address: "#{@poll_place_address_line1}"
         )
-        view "polling_locations" 
+        redirect "polling_locations/#{@new_polling_location[:id]}" 
+    end
 end
 
 
