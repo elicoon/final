@@ -4,32 +4,47 @@ connection_string = ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/development.sqli
 DB = Sequel.connect(connection_string)                                                #
 #######################################################################################
 
-# Database schema - this should reflect your domain model
-DB.create_table! :events do
+# Database schema
+DB.create_table! :polling_locations do
   primary_key :id
-  String :title
-  String :description, text: true
-  String :date
-  String :location
+  String :polling_name
+  String :polling_address
+  String :accessible
+  String :township
 end
-DB.create_table! :rsvps do
+DB.create_table! :polling_times do
   primary_key :id
-  foreign_key :event_id
-  Boolean :going
+  foreign_key :polling_name_id
+  String :voter_address
+  String :line_time
+  String :date_time_reported
+end
+DB.create_table! :polling_issues do
+  primary_key :id
+  foreign_key :polling_name_id
+  String :voter_address
+  String :issue_type
+  String :issue_text, text: true
+  String :date_time_reported
+end
+DB.create_table! :users do
+  primary_key :id
   String :name
+  String :phone
   String :email
-  String :comments, text: true
+  String :password
 end
 
-# Insert initial (seed) data
-events_table = DB.from(:events)
+  
+# Insert dummy seed data
+polling_locations_table = DB.from(:polling_locations)
 
-events_table.insert(title: "Bacon Burger Taco Fest", 
-                    description: "Here we go again bacon burger taco fans, another Bacon Burger Taco Fest is here!",
-                    date: "June 21",
-                    location: "Kellogg Global Hub")
+polling_locations_table.insert(polling_name: "Polling location 1's name", 
+                    polling_address: "Polling location 1's address",
+                    accessible: "Yes",
+                    township: "Kellogg township")
 
-events_table.insert(title: "Kaleapolooza", 
-                    description: "If you're into nutrition and vitamins and stuff, this is the event for you.",
-                    date: "July 4",
-                    location: "Nowhere")
+polling_locations_table.insert(polling_name: "Polling location 2's name", 
+                    polling_address: "Polling location 2's address",
+                    accessible: "Yes",
+                    township: "Evanston township")
