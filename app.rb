@@ -7,7 +7,9 @@ require "twilio-ruby"                                                           
 require "bcrypt"
 require "httparty"
 require "time"
-require "sinatra/cookies"                                                                        #
+require "sinatra/cookies"
+require "geocoder" 
+require "forecast_io"                                                                       #
 connection_string = ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/development.sqlite3"  #
 DB ||= Sequel.connect(connection_string)                                              #
 DB.loggers << Logger.new($stdout) unless DB.loggers.size > 0                          #
@@ -55,15 +57,13 @@ puts "params: #{params}"
 
         #array of the words in the first line. Have to do this because the google civics api is finicky
         @ad_line1=params["ad_line1"]
-        @ad_line2=params["ad_line2"]
         @user_city=params["inputCity"]
         @user_state=params["inputState"]
         @user_zip=params["inputZip"]
 
             #separating user entries into individual arrays of words and combining the arrays
             @ad_line1_array = @ad_line1.split(/\W+/)
-            @ad_line2_array = @ad_line2.split(/\W+/)
-            @full_ad_array = @ad_line1_array + @ad_line2_array << @user_city << @user_state << @user_zip
+            @full_ad_array = @ad_line1_array << @user_city << @user_state << @user_zip
 
             @address_cookie = "#{@full_ad_array.join(" ")}"
             cookies["address"] = "#{@address_cookie}"
@@ -100,10 +100,10 @@ puts "params: #{params}"
 end
 
 
-#this appears to be broken based based on the errors i'm getting
 get "/polling_locations/:id" do
     puts "params: #{params}"
 
+    @my_address = cookies["address"]
     @poll = polling_locations_table.where(id: params[:id]).to_a[0]
     cookies["poll_place_id"] = @poll[:id]
 
@@ -114,6 +114,16 @@ get "/polling_locations/:id" do
     @recent_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).order(Sequel.desc(:line_time)).to_a[0]
     @num_issues = polling_issues_table.where(polling_location_id:cookies["poll_place_id"]).count("issue_type")
 
+    #feeding setting up google maps api key
+            @googlemaps_sid = ENV["GOOGLE_MAPS_SID"]
+            puts "print @my_address #{@my_address}"
+            location_search = Geocoder.search(@my_address)
+            puts "print location_search variable #{location_search}" 
+            lat_long_array = location_search.first.coordinates # => [lat,long]
+            puts "print lat_long_array #{lat_long_array}"
+            @lat_long = "(#{lat_long_array[0]},#{lat_long_array[1]})"
+            puts "print @lat_long #{@lat_long}"
+
     view "test"
 end
 
@@ -121,7 +131,8 @@ post "/polling_locations/:id/time/create" do
     puts "params: #{params}"
     #first, find the polling location we want to create an entry for
     @poll = polling_locations_table.where(id: params[:id]).to_a[0]
-    
+    @my_address = cookies["address"]
+
     polling_times_table.insert(
         polling_location_id: @poll[:id],
         voter_address: cookies["address"],
@@ -135,6 +146,13 @@ post "/polling_locations/:id/time/create" do
     @recent_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).order(Sequel.desc(:date_time_reported)).to_a[0]
     @num_issues = polling_issues_table.where(polling_location_id:cookies["poll_place_id"]).count("issue_type")
     
+    #feeding setting up google maps api key
+            @googlemaps_sid = ENV["GOOGLE_MAPS_SID"]
+            location_search = Geocoder.search(@my_address)
+            puts "print location_search variable #{location_search}" 
+            @lat_long = location_search.first # => [lat,long]
+            puts "print @lat_long #{@lat_long}"
+
     view "test"
 end
 
@@ -142,6 +160,7 @@ post "/polling_locations/:id/issue/create" do
     puts "params: #{params}"
     #first, find the polling location we want to create an entry for
     @poll = polling_locations_table.where(id: params[:id]).to_a[0]
+    @my_address = cookies["address"]
 
     polling_issues_table.insert(
         polling_location_id: @poll[:id],
@@ -156,6 +175,13 @@ post "/polling_locations/:id/issue/create" do
     @avg_wait_time = @tot_wait_time/@count_wait_times
     @recent_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).order(Sequel.desc(:date_time_reported)).to_a[0]
     @num_issues = polling_issues_table.where(polling_location_id:cookies["poll_place_id"]).count("issue_type")
+
+    #feeding setting up google maps api key
+            @googlemaps_sid = ENV["GOOGLE_MAPS_SID"]
+            location_search = Geocoder.search(@my_address)
+            puts location_search 
+            @lat_long = location_search.first # => [lat,long]
+            puts @lat_long
 
     view "test"
 end

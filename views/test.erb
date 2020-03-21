@@ -4,7 +4,7 @@
 
 <br><br>
 
-Your address:
+Your address: <%=@my_address%>
 
 <br>
 
@@ -39,20 +39,21 @@ Issues reported: <%= @num_issues%> issues reported.
 <br><br>
 <form action="/polling_locations/<%=@poll[:id]%>/time/create" method="post">
 <div class="form-group">
-    <label for="exampleFormControlSelect1">MY wait time is:</label>
+    <label for="exampleFormControlSelect1">My wait time is:</label>
     <select class="form-control" id="exampleFormControlSelect1" name="line_time">
       <option value="5">5</option>
       <option value="10">10</option>
-      <!-- <option>15</option>
-      <option>20</option>
-      <option>25</option>
-      <option>30</option>
-      <option>35</option>
-      <option>40</option>
-      <option>45</option>
-      <option>50</option>
-      <option>55</option>
-      <option>60</option> -->
+      <option value="15">15</option>
+      <option value="20">20</option>
+      <option value="25">25</option>
+      <option value="30">30</option>
+      <option value="35">35</option>
+      <option value="40">40</option>
+      <option value="45">45</option>
+      <option value="50">50</option>
+      <option value="55">55</option>
+      <option value="60">60</option>
+
     </select>
     minutes.
     <button type="submit" class="btn btn-primary">Submit</button>
@@ -80,3 +81,13 @@ Report an Issue
 </form>
 
 <br> <br>
+
+<div class="container mt-5">
+      <iframe
+        width="600"
+        height="450"
+        frameborder="0" style="border:0"
+        src="https://www.google.com/maps/embed/v1/place?key=<%=@googlemaps_sid%>
+          &q=<%= @lat_long %>&zoom=6" allowfullscreen>
+      </iframe>
+    </div>
