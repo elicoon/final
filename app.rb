@@ -52,15 +52,22 @@ get "/polling_location" do
 puts "params: #{params}"
 @user_address = params["q"]
 
+#array of the words in the first line
+@ad_line1=params["ad_line1"]
+@ad_line2=params["ad_line2"]
+@user_city=params["inputCity"]
+@user_state=params["inputState"]
+@user_zip=params["inputZip"]
 
-@streetname=params["st_name"]
-@words = @streetname.split(/\W+/)
+@ad_line1_array = @ad_line1.split(/\W+/)
+@ad_line2_array = @ad_line2.split(/\W+/)
+@full_ad_array = @ad_line1_array + @ad_line2_array << @user_city << @user_state << @user_zip
+@civic_api_address_format = "#{@full_ad_array.join("%20")}"
 
-# googleurl="https://www.googleapis.com/civicinfo/v2/voterinfo?address=#{@user_address}&electionId=2000&key=AIzaSyAddUXfmg1ysNb-iMDraEIgNI_GXqVSk90"
-googleurl="https://www.googleapis.com/civicinfo/v2/voterinfo?address=800%20elgin%20rd%20evanston%20il%2060201&electionId=2000&key=AIzaSyAddUXfmg1ysNb-iMDraEIgNI_GXqVSk90"
+@googlecivic_sid = ENV["GOOGLE_CIVIC_SID"]
+googleurl="https://www.googleapis.com/civicinfo/v2/voterinfo?address=#{@civic_api_address_format}&electionId=2000&key=#{@googlecivic_sid}"
 
 response = HTTParty.get(googleurl).parsed_response.to_hash
-# response = HTTParty.get('https://www.googleapis.com/civicinfo/v2/voterinfo?address=800%20elgin%20rd&electionId=2000&key=AIzaSyAddUXfmg1ysNb-iMDraEIgNI_GXqVSk90').parsed_response.to_hash
 @poll_place_address_line1 = response["pollingLocations"][0]["address"]["line1"]
 
 
