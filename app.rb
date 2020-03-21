@@ -50,7 +50,6 @@ end
 get "/polling_location" do
 #create a new route here that is taking the user's address and then matching/creating the polling location
 puts "params: #{params}"
-# @user_address = params["q"]
 
         #array of the words in the first line. Have to do this because the google civics api is finicky
         @ad_line1=params["ad_line1"]
@@ -79,17 +78,26 @@ puts "params: #{params}"
     #check if there's already a polling place with this address and adding a new entry to the database if it doesn't find a match
     @existing_polling_location = polling_locations_table.where(polling_address: @poll_place_address_line1).to_a[0]
     if @existing_polling_location
-        view "polling_location"
+        view "polling_location/#{@existing_polling_location[:id]}" #this is what's currently breaking
     else
         polling_locations_table.insert(
             polling_name: "New polling location",
             polling_address: "#{@poll_place_address_line1}"
         )
-        view "polling_location"
+        view "polling_location/#{@existing_polling_location[:id]}" #this is also probably breaking
     end
 end
 
 
+#this appears to be broken based based on the errors i'm getting
+get "/polls/:id" do
+    puts "params: #{params}"
+
+    @poll = polling_locations_table.where(id: params[:id]).to_a[0]
+    pp @poll
+
+    view "polls"
+end
 
 #next, redirect to the show page because now we have the location id
 #think of this similarly to the users create from class 10
@@ -99,13 +107,13 @@ end
 # view "polling_location"
 # end
 
-get "/polling_locations/:id" do
-    puts "params #{params}"
+# get "/polling_locations/:id" do
+#     puts "params #{params}"
 
-    @users_table = users_table
-    @polling_location 
+#     @users_table = users_table
+#     @polling_location = polling_locations_table.where(id: 
 
-view
+# view
 
 
 
