@@ -24,15 +24,17 @@ Township & Precinct: <%= @poll[:township] %>
 
 <br>
 
-Last reported wait time: 
+Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes
 
 <br>
 
-Avg reported wait time:
+Avg reported wait time: <%= @avg_wait_time%> minutes
 
 <br>
+Total wait time: <%= @tot_wait_time%>
+<br>
 
-Issues reported:
+Issues reported: <%= @num_issues%> issues reported.
 
 <br><br>
 <form action="/polling_locations/<%=@poll[:id]%>/time/create" method="post">
@@ -59,7 +61,7 @@ Issues reported:
 
   <br><br>
 Report an Issue
-<form>
+<form action="/polling_locations/<%=@poll[:id]%>/issue/create" method="post">
 <div class="form-group">
     <label for="exampleFormControlSelect1">Issue Type</label>
     <select class="form-control" id="exampleFormControlSelect1" name="issue_type">

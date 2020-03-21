@@ -6,7 +6,8 @@ require "logger"                                                                
 require "twilio-ruby"                                                                 #
 require "bcrypt"
 require "httparty"
-require "time"                                                                        #
+require "time"
+require "sinatra/cookies"                                                                        #
 connection_string = ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/development.sqlite3"  #
 DB ||= Sequel.connect(connection_string)                                              #
 DB.loggers << Logger.new($stdout) unless DB.loggers.size > 0                          #
@@ -65,7 +66,7 @@ puts "params: #{params}"
             @full_ad_array = @ad_line1_array + @ad_line2_array << @user_city << @user_state << @user_zip
 
             @address_cookie = "#{@full_ad_array.join(" ")}"
-            #cookies["address"] = "#{@address_cookie}"
+            cookies["address"] = "#{@address_cookie}"
 
             #converting to civic api-friendly format
             @civic_api_address_format = "#{@full_ad_array.join("%20")}"
@@ -82,13 +83,15 @@ puts "params: #{params}"
     #check if there's already a polling place with this address and adding a new entry to the database if it doesn't find a match
     @existing_polling_location = polling_locations_table.where(polling_address: @poll_place_address_line1).to_a[0]
     if @existing_polling_location
-        redirect "polling_locations/#{@existing_polling_location[:id]}" #this is what's currently breaking
-        #view "polling_locations/#{@existing_polling_location[:id]}" 
+        redirect "polling_locations/#{@existing_polling_location[:id]}" 
     else
-        @new_polling_location = polling_locations_table.insert(
+        polling_locations_table.insert(
             polling_name: "New polling location",
             polling_address: "#{@poll_place_address_line1}"
         )
+        #doing this because setting a variable equal to the table insert just returns the id, not the full hash
+        @new_polling_location = polling_locations_table.where(polling_address: @poll_place_address_line1).to_a[0]
+
         puts "#{@new_polling_location} this is the text to reference"
         if @new_polling_location
             redirect "polling_locations/#{@new_polling_location[:id]}" 
@@ -102,24 +105,58 @@ get "/polling_locations/:id" do
     puts "params: #{params}"
 
     @poll = polling_locations_table.where(id: params[:id]).to_a[0]
-    pp @poll
+    cookies["poll_place_id"] = @poll[:id]
+
+    #creating variables for wait times and issues to populate
+    @tot_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).sum(:line_time)
+    @count_wait_times = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).count(:line_time)
+    @avg_wait_time = @tot_wait_time/@count_wait_times
+    @recent_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).order(Sequel.desc(:line_time)).to_a[0]
+    @num_issues = polling_issues_table.where(polling_location_id:cookies["poll_place_id"]).count("issue_type")
 
     view "test"
 end
 
 post "/polling_locations/:id/time/create" do
-    puts "para: #{params}"
-    puts Time.now.to_i
+    puts "params: #{params}"
     #first, find the polling location we want to create an entry for
-    @poll = polling_locations_table.where(id: params[:id]).to.a[0]
-
+    @poll = polling_locations_table.where(id: params[:id]).to_a[0]
+    
     polling_times_table.insert(
         polling_location_id: @poll[:id],
-        #voter_address: cookies
+        voter_address: cookies["address"],
         line_time: params["line_time"],
         date_time_reported: Time.now.to_i
     )
     
+    @tot_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).sum(:line_time)
+    @count_wait_times = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).count(:line_time)
+    @avg_wait_time = @tot_wait_time/@count_wait_times
+    @recent_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).order(Sequel.desc(:date_time_reported)).to_a[0]
+    @num_issues = polling_issues_table.where(polling_location_id:cookies["poll_place_id"]).count("issue_type")
+    
+    view "test"
+end
+
+post "/polling_locations/:id/issue/create" do
+    puts "params: #{params}"
+    #first, find the polling location we want to create an entry for
+    @poll = polling_locations_table.where(id: params[:id]).to_a[0]
+
+    polling_issues_table.insert(
+        polling_location_id: @poll[:id],
+        voter_address: cookies["address"],
+        issue_type: params["issue_type"],
+        issue_text: params["issue_details"],
+        date_time_reported: Time.now.to_i
+    )
+
+    @tot_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).sum(:line_time)
+    @count_wait_times = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).count(:line_time)
+    @avg_wait_time = @tot_wait_time/@count_wait_times
+    @recent_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).order(Sequel.desc(:date_time_reported)).to_a[0]
+    @num_issues = polling_issues_table.where(polling_location_id:cookies["poll_place_id"]).count("issue_type")
+
     view "test"
 end
 
