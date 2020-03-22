@@ -200,6 +200,8 @@ post "/polling_locations/:id/issue/create" do
     #need to update the to number to be a poll monitor administrator
     to = '+15032011925'
 
+    #when upgrading twilio, would make a loop here to dynamically send a message to all registered poll monitors
+
     client.messages.create(
         from: from,
         to: to,

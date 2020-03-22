@@ -21,6 +21,8 @@
 
             <!-- Trying to get strftime working -->
 
+            <%= Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%A") %> 
+
             <br>
             Avg reported wait time: <%= @avg_wait_time%> minutes
             <br>
