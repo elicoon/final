@@ -9,7 +9,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-6">
+        <div class="col-12">
             <h3> Poll Information </h3>
             Polling Location: <%= @poll[:polling_name] %>
             <br>
@@ -32,15 +32,15 @@
     <h3> Reported Wait Times </h3>
         <% for poll in @time_table%>
             <div class="row">
-                <div class="col-2">
+                <div class="col-4">
                     Date
                     <%= poll[:date_time_reported]%>
                 </div>
-                <div class="col-2">
+                <div class="col-4">
                     Time
                     <%= poll[:date_time_reported]%>
                 </div>
-                <div class="col-2">
+                <div class="col-4">
                 Reported Wait
                 <%= poll[:line_time]%>
                 </div>
@@ -52,15 +52,15 @@
     <h3> Reported Issues </h3>
         <% for poll in @issue_table%>
             <div class="row">
-                <div class="col-2">
+                <div class="col-4">
                     Date
                     <%= poll[:date_time_reported]%>
                 </div>
-                <div class="col-2">
+                <div class="col-4">
                     Issue Type
                     <%= poll[:issue_type]%>
                 </div>
-                <div class="col-2">
+                <div class="col-4">
                     Issue Type
                     <%= poll[:issue_text]%>
                 </div>

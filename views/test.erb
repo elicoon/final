@@ -17,7 +17,7 @@
             Township & Precinct: <%= @poll[:township] %>
             <br>
             <br>
-            Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes
+            Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes at <%= @recent_wait_time[:date_time_reported].strftime("%A")%>
             <br>
             Avg reported wait time: <%= @avg_wait_time%> minutes
             <br>

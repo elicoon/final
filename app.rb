@@ -26,9 +26,9 @@ users_table = DB.from(:users)
 
 #setting the user's session (aka encrypted cookie)
 #good to go (I think)
-# before do
-#     @current_user = users_table.where(id: session["user_id"]).to_a[0]
-# end
+before do
+    @current_user = users_table.where(id: session["user_id"]).to_a[0]
+end
 
 #enabling Twilio with environmental variables
 #NEEDTOFIX -> 
@@ -246,3 +246,62 @@ get "/poll_monitor/:id" do
 
     view "poll_monitor_show"
 end
+
+#display the signup form (aka "new")
+get "/users/new" do
+    view "new_user"
+end
+
+#receive the submitted user signup form aka ("create")
+post "/users/create" do
+    puts "params: #{params}"
+
+    #start by checking if there is already a user with this email
+    existing_user = users_table.where(email: params["email"]).to_a[0]
+
+    if existing_user
+        view "error"
+    else
+        users_table.insert(
+            name: params["name"],
+            phone: params["phone"],
+            email: params["email"],
+            password: BCrypt::Password.create(params["password"])
+        )
+        redirect "/logins/new"
+    end
+end
+
+#display the login form (aka "new")
+get "/logins/new" do
+    view "new_login"
+end
+
+#receive and process the submitted login form (aka "create")
+post "/logins/create" do
+    puts "params: #{params}"
+
+    #first, user with the params["email"]?
+    @user = users_table.where(email: params["email"]).to_a[0]
+
+    if @user
+        #step 2: if @user, encrypted password match?
+        if BCrypt::Password.new(@user[:password]) == params["password"]
+            #then set an encrypted cookie for logged in user
+            session["user_id"] = @user[:id]
+            redirect "/poll_index"
+        else
+            view "create_login_failed"
+        end
+    else
+        view "create_login_failed"
+    end
+end
+
+get "/logout" do
+    #remove encrypted cookie for logged out user
+    session["user_id"] = nil
+    redirect "/"
+end
+    
+

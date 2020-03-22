@@ -18,7 +18,7 @@
     <!-- Your own CSS -->
     <link rel="stylesheet" href="/styles.css">
 
-    <title>Hello world!</title>
+    <title>The Voting Fairness Project</title>
   </head>
   <body>
 
@@ -26,10 +26,27 @@
     <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
         <h1 class="my-0 mr-md-auto">The Voting Fairness Project</h1>
         <nav class="my-2 my-md-0 mr-md-3">
-            <a class="p-2 text-dark" href="/">Home</a>
-            <a class="p-2 text-dark" href="#">Sign Up</a>
-            <a class="p-2 text-dark" href="#">Sign In</a>
-            <a class="p-2 text-dark" href="/poll_index">Poll Index</a>
+            
+
+            <!-- Only show these items if a user is logged in -->
+                <% if @current_user %>
+                    <li class="navbar-text">
+                        Logged in as <%= @current_user[:name] %>
+                    </li>
+                    
+                    <a class="p-2 text-blue" href="/">Address Lookup</a>
+                    <a class="p-2 text-blue" href="/poll_index">Poll Index</a>
+                    <a class="p-2 text-blue" href="/logout">Logout</a>
+
+                    <!-- Only show these items if a user is not logged in -->
+                <% else %>
+
+                    <a class="p-2 text-blue" href="/">Home</a>
+                    <a class="p-2 text-blue" href="/users/new">Sign Up</a>
+                    <a class="p-2 text-blue" href="/logins/new">Sign In</a>
+
+                <% end %>
+
         </nav>
            
     </div>
