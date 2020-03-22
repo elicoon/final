@@ -193,6 +193,19 @@ post "/polling_locations/:id/issue/create" do
     @poll = polling_locations_table.where(id: params[:id]).to_a[0]
     @my_address = cookies["address"]
 
+    twilio_sid = ENV["TWILIO_SID"]
+    twilio_auth = ENV["TWILIO_AUTH"]
+    client = Twilio::REST::Client.new(twilio_sid, twilio_auth)
+    from = '+13145260952'
+    #need to update the to number to be a poll monitor administrator
+    to = '+15032011925'
+
+    client.messages.create(
+        from: from,
+        to: to,
+        body: "A new issue has been created"
+    )
+
     polling_issues_table.insert(
         polling_location_id: @poll[:id],
         voter_address: cookies["address"],
