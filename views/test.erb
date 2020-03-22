@@ -1,93 +1,84 @@
 <h1>Welcome to your polling place.</h1>
-
-<%= pp @poll %>
-
-<br><br>
-
-Your address: <%=@my_address%>
-
 <br>
 
-Polling Location: <%= @poll[:polling_name] %>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h3>
+            Your address: <%=@my_address%>
+            </h3>
+            <br>
+            Polling Location Name: <%= @poll[:polling_name] %>
+            <br>
+            Polling Location Address: <%= @poll[:polling_address] %>
+            <br>
+            Accessible? <%= @poll[:accessible] %>
+            <br>
+            Township & Precinct: <%= @poll[:township] %>
+            <br>
+            <br>
+            Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes
+            <br>
+            Avg reported wait time: <%= @avg_wait_time%> minutes
+            <br>
+            Issues reported: <%= @num_issues%> issues reported
+        </div>
 
-<br>
+        <div class="col-6">
+            <form action="/polling_locations/<%=@poll[:id]%>/time/create" method="post">
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">My wait time is:</label>
+                <select class="form-control" id="exampleFormControlSelect1" name="line_time">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="35">35</option>
+                <option value="40">40</option>
+                <option value="45">45</option>
+                <option value="50">50</option>
+                <option value="55">55</option>
+                <option value="60">60</option>
+                </select> minutes.
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+            </form>
 
-Polling Location Address: <%= @poll[:polling_address] %>
-
-<br>
-
-Accessible? <%= @poll[:accessible] %>
-
-<br>
-
-Township & Precinct: <%= @poll[:township] %>
-
-<br>
-
-Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes
-
-<br>
-
-Avg reported wait time: <%= @avg_wait_time%> minutes
-
-<br>
-Total wait time: <%= @tot_wait_time%>
-<br>
-
-Issues reported: <%= @num_issues%> issues reported.
-
-<br><br>
-<form action="/polling_locations/<%=@poll[:id]%>/time/create" method="post">
-<div class="form-group">
-    <label for="exampleFormControlSelect1">My wait time is:</label>
-    <select class="form-control" id="exampleFormControlSelect1" name="line_time">
-      <option value="5">5</option>
-      <option value="10">10</option>
-      <option value="15">15</option>
-      <option value="20">20</option>
-      <option value="25">25</option>
-      <option value="30">30</option>
-      <option value="35">35</option>
-      <option value="40">40</option>
-      <option value="45">45</option>
-      <option value="50">50</option>
-      <option value="55">55</option>
-      <option value="60">60</option>
-
-    </select>
-    minutes.
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </div>
-</form>
-
-  <br><br>
-Report an Issue
-<form action="/polling_locations/<%=@poll[:id]%>/issue/create" method="post">
-<div class="form-group">
-    <label for="exampleFormControlSelect1">Issue Type</label>
-    <select class="form-control" id="exampleFormControlSelect1" name="issue_type">
-      <option>Voter Intimidation</option>
-      <option>Registration</option>
-      <option>Misinformation</option>
-      <option>Sanitation</option>
-      <option>Other - specify below</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlTextarea1">Issue Details</label>
-    <textarea class="form-control" id="exampleFormControlTextarea1" name="issue_details" rows="3"></textarea>
-  </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-
-<br> <br>
-Your Polling Location:
-<div class="container mt-5">
-      <iframe
-        width="600"
-        height="450"
-        frameborder="0" style="border:0"
-        src="https://www.google.com/maps/embed/v1/place?key=<%=@googlemaps_sid%>
-          &q=<%= @lat_long %>&zoom=14" allowfullscreen>
-      </iframe>
+            <br><br>
+            Report an Issue
+            <form action="/polling_locations/<%=@poll[:id]%>/issue/create" method="post">
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Issue Type</label>
+                <select class="form-control" id="exampleFormControlSelect1" name="issue_type">
+                <option>Voter Intimidation</option>
+                <option>Registration</option>
+                <option>Misinformation</option>
+                <option>Sanitation</option>
+                <option>Other - specify below</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Issue Details</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" name="issue_details" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
     </div>
+
+    <div class="row">
+        
+            <div class="container mt-5">
+                <h4>Your Polling Location:</h4>
+                <iframe
+                    width="600"
+                    height="450"
+                    frameborder="0" style="border:0"
+                    src="https://www.google.com/maps/embed/v1/place?key=<%=@googlemaps_sid%>
+                    &q=<%= @lat_long %>&zoom=14" allowfullscreen>
+                </iframe>
+            </div>
+    </div>
+</div>

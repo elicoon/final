@@ -97,11 +97,11 @@ puts "params: #{params}"
     else
         polling_locations_table.insert(
             polling_name: "New polling location",
-            polling_address: "#{@poll_place_address_line1}"
+            polling_address: "#{@poll_place_address_line1}",
+            accessible: "No data on accessibility",
+            township: "No data on township or precinct"
         )
 
-        
-    
         #doing this because setting a variable equal to the table insert just returns the id, not the full hash
         @new_polling_location = polling_locations_table.where(polling_address: @poll_place_address_line1).to_a[0]
 
