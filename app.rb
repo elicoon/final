@@ -24,10 +24,16 @@ polling_times_table = DB.from(:polling_times)
 polling_issues_table = DB.from(:polling_issues)
 users_table = DB.from(:users)
 
+
 #setting the user's session (aka encrypted cookie)
 #good to go (I think)
 before do
     @current_user = users_table.where(id: session["user_id"]).to_a[0]
+    @all_polls_asc = polling_locations_table.order(Sequel.asc(:polling_name)).to_a
+    puts "@all_polls_asc is #{@all_polls_asc}"
+    @poll_time_reports_desc = polling_times_table.order(Sequel.desc(:date_time_reported)).to_a
+    puts "@poll_time_reports_desc is #{@poll_time_reports_desc}"
+    @polling_times_table_reference = DB.from(:polling_times)
 end
 
 #enabling Twilio with environmental variables

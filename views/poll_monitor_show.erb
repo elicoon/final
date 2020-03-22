@@ -1,29 +1,37 @@
 <h1>Welcome to your polling place.</h1>
 
-@poll: <%= pp @poll %>
-<br><br>
-@time_table: <%= pp @time_table%>
-<br><br>
-@issue_table: <%= pp @issue_table%>
-<br><br>
-
 <div class="container">
     <div class="row">
         <div class="col-12">
             <h3> Poll Information </h3>
-            Polling Location: <%= @poll[:polling_name] %>
+            <b>Polling Location:</b> <%= @poll[:polling_name] %>
             <br>
-            Polling Location Address: <%= @poll[:polling_address] %>
+            <b>Polling Location Address:</b> <%= @poll[:polling_address] %>
             <br>
-            Accessible? <%= @poll[:accessible] %>
+            <b>Accessible?</b> <%= @poll[:accessible] %>
             <br>
-            Township & Precinct: <%= @poll[:township] %>
+            <b>Township & Precinct:</b> <%= @poll[:township] %>
             <br>
-            Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes
+            <b>Last reported wait time:</b> <%= @recent_wait_time[:line_time] %> minutes at 
+
+            <!-- Using strftime to show when last issue was reported -->
+
+            <%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%l")
+            %>:<%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%M")
+            %> <%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%p")
+            %> <%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%Z")
+            %> on <%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%F")
+            %>
+
             <br>
-            Avg reported wait time: <%= @avg_wait_time%> minutes
+            <b>Avg reported wait time:</b> <%= @avg_wait_time%> minutes
             <br>
-            Issues reported: <%= @num_issues%> issues reported.
+            <b>Issues reported:</b> <%= @num_issues%> issues reported
         </div>
     </div>
 </div>
@@ -33,16 +41,26 @@
         <% for poll in @time_table%>
             <div class="row">
                 <div class="col-4">
-                    Date
-                    <%= poll[:date_time_reported]%>
+                    Date: 
+
+                    <!-- strftime conversion -->
+                        <%= Time.at(poll[:date_time_reported].to_i).strftime("%F")%>
+
                 </div>
                 <div class="col-4">
-                    Time
-                    <%= poll[:date_time_reported]%>
+                    Time: 
+                        <%= Time.at(poll[:date_time_reported].to_i).strftime("%l")
+                        %>:<%= 
+                        Time.at(poll[:date_time_reported].to_i).strftime("%M")
+                        %> <%= 
+                        Time.at(poll[:date_time_reported].to_i).strftime("%p")
+                        %> <%= 
+                        Time.at(poll[:date_time_reported].to_i).strftime("%Z")
+                        %>
                 </div>
                 <div class="col-4">
-                Reported Wait
-                <%= poll[:line_time]%>
+                Reported Wait: 
+                        <%= poll[:line_time]%> minutes
                 </div>
             </div>
         <% end%>
@@ -53,15 +71,15 @@
         <% for poll in @issue_table%>
             <div class="row">
                 <div class="col-4">
-                    Date
-                    <%= poll[:date_time_reported]%>
+                    Date: 
+                    <%= Time.at(poll[:date_time_reported].to_i).strftime("%F")%>
                 </div>
                 <div class="col-4">
-                    Issue Type
+                    Issue Type: 
                     <%= poll[:issue_type]%>
                 </div>
                 <div class="col-4">
-                    Issue Type
+                    Issue Details: 
                     <%= poll[:issue_text]%>
                 </div>
             </div>

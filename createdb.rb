@@ -40,6 +40,13 @@ end
 polling_locations_table = DB.from(:polling_locations)
 polling_issues_table = DB.from(:polling_issues)
 polling_times_table = DB.from(:polling_times)
+polling_users_table = DB.from(:users)
+
+polling_users_table.insert(
+                    name: dummy user 1
+                    phone: 5555555555
+                    email: example@email.com
+)
 
 polling_locations_table.insert(polling_name: "Polling location 1's name", 
                     polling_address: "Polling location 1's address",

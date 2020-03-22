@@ -8,25 +8,35 @@
             Your address: <%=@my_address%>
             </h3>
             <br>
-            Polling Location Name: <%= @poll[:polling_name] %>
+            <b>Polling Location Name:</b> <%= @poll[:polling_name] %>
             <br>
-            Polling Location Address: <%= @poll[:polling_address] %>
+            <b>Polling Location Address:</b> <%= @poll[:polling_address] %>
             <br>
-            Accessible? <%= @poll[:accessible] %>
+            <b>Accessible?</b> <%= @poll[:accessible] %>
             <br>
-            Township & Precinct: <%= @poll[:township] %>
+            <b>Township & Precinct:</b> <%= @poll[:township] %>
             <br>
             <br>
-            Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes at 
+            <b>Last reported wait time:</b> <%= @recent_wait_time[:line_time] %> minutes at 
 
-            <!-- Trying to get strftime working -->
+            <!-- Using strftime to show when last issue was reported -->
 
-            <%= Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%A") %> 
+            <%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%l")
+            %>:<%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%M")
+            %> <%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%p")
+            %> <%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%Z")
+            %> on <%= 
+            Time.at(@recent_wait_time[:date_time_reported].to_i).strftime("%F")
+            %>
 
             <br>
-            Avg reported wait time: <%= @avg_wait_time%> minutes
+            <b>Avg reported wait time:</b> <%= @avg_wait_time%> minutes
             <br>
-            Issues reported: <%= @num_issues%> issues reported
+            <b>Issues reported:</b> <%= @num_issues%> issues reported
         </div>
 
         <div class="col-6">

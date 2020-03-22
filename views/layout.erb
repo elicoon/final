@@ -18,6 +18,15 @@
     <!-- Your own CSS -->
     <link rel="stylesheet" href="/styles.css">
 
+    <!-- News ticker head stuff-->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+
     <title>The Voting Fairness Project</title>
   </head>
   <body>
@@ -34,7 +43,6 @@
                         Logged in as <%= @current_user[:name] %>
                     </li>
                     
-                    <a class="p-2 text-blue" href="/">Address Lookup</a>
                     <a class="p-2 text-blue" href="/poll_index">Poll Index</a>
                     <a class="p-2 text-blue" href="/logout">Logout</a>
 
@@ -50,6 +58,28 @@
         </nav>
            
     </div>
+
+   
+    <!-- news ticker @all_polls_asc is the polling locations table -->
+    <!-- news ticker @polling_times_table_reference is the full time database -->
+
+<div class="onoffswitch3">      
+    <span class="onoffswitch3-switch">Latest Line Times</span>
+        <marquee class="scroll-text">Avengers: Infinity War's Iron Spider Suit May Use Bleeding Edge Tech  <span class="glyphicon glyphicon-forward"></span> Russo brothers ask for fans not to spoil Avengers: Infinity War <span class="glyphicon glyphicon-forward"></span>  Bucky's Arm Miraculously Regenerates On Avengers: Infinity War Poster</marquee>
+</div>
+
+ <div>
+    <% for location in @all_polls_asc %>
+        <!-- first, the location name -->
+        <%= "#{location[:polling_name]}: " %>
+        
+        <!-- then, the most recent time of the location id's reported time -->
+        
+
+    <% end%>
+
+    </div>
+
 
     <div class="container mt-5">
       <%= yield %>
