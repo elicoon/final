@@ -60,25 +60,36 @@
     </div>
 
    
-    <!-- news ticker @all_polls_asc is the polling locations table -->
-    <!-- news ticker @polling_times_table_reference is the full time database -->
 
-<div class="onoffswitch3">      
-    <span class="onoffswitch3-switch">Latest Line Times</span>
-        <marquee class="scroll-text">Avengers: Infinity War's Iron Spider Suit May Use Bleeding Edge Tech  <span class="glyphicon glyphicon-forward"></span> Russo brothers ask for fans not to spoil Avengers: Infinity War <span class="glyphicon glyphicon-forward"></span>  Bucky's Arm Miraculously Regenerates On Avengers: Infinity War Poster</marquee>
-</div>
 
- <div>
-    <% for location in @all_polls_asc %>
-        <!-- first, the location name -->
-        <%= "#{location[:polling_name]}: " %>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-2">   
+        <b>Latest Line Times</b>
+        </div>
+        <div class="col-lg-auto">
+            <marquee class="scroll-text">Item 1 <span class="glyphicon glyphicon-forward"></span> 
+            Item 2 <span class="glyphicon glyphicon-forward"></span>  
+            Item 3 <span class="glyphicon glyphicon-forward"></span>  
+             
+            <!-- news ticker @all_polls_asc is the polling locations table -->
+            <!-- news ticker @polling_times_table_reference is the full time database -->
+             <% for location in @all_polls_asc %>
+
+                <!-- first, the location name -->
+                <%= "#{location[:polling_name]}: " %>
         
-        <!-- then, the most recent time of the location id's reported time -->
+                <!-- then, the most recent time of the location id's reported time -->
+
+                <!-- finally, symbol separating next one-->
+                <span class="glyphicon glyphicon-forward"></span> 
         
 
-    <% end%>
-
+            <% end%>
+            </marquee>
+        </div>
     </div>
+</div>
 
 
     <div class="container mt-5">
