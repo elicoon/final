@@ -87,9 +87,9 @@ puts "params: #{params}"
 #need a check here to see if google civics had a response. If google civics returned an error, come back with that error
 
 
-# if response["error"]["message"] == "Failed to parse address"
-#     view "address_error"
-# else
+ if response["error"] && response["error"]["message"] == "Failed to parse address"
+     view "address_error"
+ else
 
 
     @poll_place_address_line1 = response["pollingLocations"][0]["address"]["line1"]
@@ -135,7 +135,7 @@ puts "params: #{params}"
             redirect "polling_locations/#{@new_polling_location[:id]}" 
         end
     end
-# end
+end
 end
 
 
