@@ -1,35 +1,77 @@
 <h1>Welcome to your polling place.</h1>
 
-<%= pp @poll %>
+@poll: <%= pp @poll %>
+<br><br>
+@time_table: <%= pp @time_table%>
+<br><br>
+@issue_table: <%= pp @issue_table%>
+<br><br>
 
-<br>
-<br>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <h3> Poll Information </h3>
+            Polling Location: <%= @poll[:polling_name] %>
+            <br>
+            Polling Location Address: <%= @poll[:polling_address] %>
+            <br>
+            Accessible? <%= @poll[:accessible] %>
+            <br>
+            Township & Precinct: <%= @poll[:township] %>
+            <br>
+            Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes
+            <br>
+            Avg reported wait time: <%= @avg_wait_time%> minutes
+            <br>
+            Issues reported: <%= @num_issues%> issues reported.
+        </div>
+    </div>
+</div>
 
-Polling Location: <%= @poll[:polling_name] %>
+<div class="container">   
+    <h3> Reported Wait Times </h3>
+        <% for poll in @time_table%>
+            <div class="row">
+                <div class="col-2">
+                    Date
+                    <%= poll[:date_time_reported]%>
+                </div>
+                <div class="col-2">
+                    Time
+                    <%= poll[:date_time_reported]%>
+                </div>
+                <div class="col-2">
+                Reported Wait
+                <%= poll[:line_time]%>
+                </div>
+            </div>
+        <% end%>
+</div>    
 
-<br>
+<div class="container">
+    <h3> Reported Issues </h3>
+        <% for poll in @issue_table%>
+            <div class="row">
+                <div class="col-2">
+                    Date
+                    <%= poll[:date_time_reported]%>
+                </div>
+                <div class="col-2">
+                    Issue Type
+                    <%= poll[:issue_type]%>
+                </div>
+                <div class="col-2">
+                    Issue Type
+                    <%= poll[:issue_text]%>
+                </div>
+            </div>
+        <% end %>
 
-Polling Location Address: <%= @poll[:polling_address] %>
+</div>
 
-<br>
 
-Accessible? <%= @poll[:accessible] %>
 
-<br>
+            
 
-Township & Precinct: <%= @poll[:township] %>
 
-<br>
-
-Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes
-
-<br>
-
-Avg reported wait time: <%= @avg_wait_time%> minutes
-
-<br>
-Total wait time: <%= @tot_wait_time%>
-<br>
-
-Issues reported: <%= @num_issues%> issues reported.
 

@@ -240,8 +240,8 @@ get "/poll_monitor/:id" do
     @recent_wait_time = polling_times_table.where(polling_location_id: params[:id]).order(Sequel.desc(:line_time)).to_a[0]
     @num_issues = polling_issues_table.where(polling_location_id: params[:id]).count("issue_type")
 
-    @issue_table = polling_issues_table.where(polling_location_id: params[:id])
-    @time_table = polling_times_table.where(polling_location_id: params[:id])
+    @issue_table = polling_issues_table.where(polling_location_id: params[:id]).order(Sequel.desc(:date_time_reported)).all.to_a
+    @time_table = polling_times_table.where(polling_location_id: params[:id]).order(Sequel.desc(:date_time_reported)).all.to_a
    
 
     view "poll_monitor_show"
