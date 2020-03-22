@@ -60,7 +60,7 @@
     </div>
 
    
-
+ <%= puts @polling_times_table_reference %>
 
 <div class="container">
     <div class="row">
@@ -74,6 +74,7 @@
              
             <!-- news ticker @all_polls_asc is the polling locations table -->
             <!-- news ticker @polling_times_table_reference is the full time database -->
+
              <% for location in @all_polls_asc %>
 
                 <!-- first, the location name -->
@@ -81,15 +82,28 @@
         
                 <!-- then, the most recent time of the location id's reported time -->
 
+                
+
+
+
                 <!-- finally, symbol separating next one-->
                 <span class="glyphicon glyphicon-forward"></span> 
         
 
-            <% end%>
+            <% end %>
             </marquee>
         </div>
     </div>
 </div>
+        <div>
+                <% times = @polling_times_table_reference.where(polling_location_id:1) %>
+                
+                <% ordered_times = times.order(Sequel.desc(:date_time_reported)) %>
+
+                <%= puts ordered_times.to_s %>
+        </div>
+
+                
 
 
     <div class="container mt-5">

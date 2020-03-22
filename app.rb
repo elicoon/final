@@ -9,7 +9,8 @@ require "httparty"
 require "time"
 require "sinatra/cookies"
 require "geocoder" 
-require "forecast_io"                                                                 #
+require "forecast_io"
+require "pry"                                                                 #
 connection_string = ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/development.sqlite3"  #
 DB ||= Sequel.connect(connection_string)                                              #
 DB.loggers << Logger.new($stdout) unless DB.loggers.size > 0                          #
@@ -26,33 +27,23 @@ users_table = DB.from(:users)
 
 
 #setting the user's session (aka encrypted cookie)
-#good to go (I think)
 before do
     @current_user = users_table.where(id: session["user_id"]).to_a[0]
     @all_polls_asc = polling_locations_table.order(Sequel.asc(:polling_name)).to_a
+
     puts "@all_polls_asc is #{@all_polls_asc}"
+
     @poll_time_reports_desc = polling_times_table.order(Sequel.desc(:date_time_reported)).to_a
     puts "@poll_time_reports_desc is #{@poll_time_reports_desc}"
+
     @polling_times_table_reference = DB.from(:polling_times)
+
 end
 
-#enabling Twilio with environmental variables
-#NEEDTOFIX -> 
-    #specify correct route
-    #sign up for twilio account
-    #don't be an idiot and push to github with twilio SID
-    #set environmental variables in gitpod
-    #set environmental variables in heroku
-# get '/send_text' do
-#     account_sid = ENV["TWILIO_ACCOUNT_SID"]
-# end
 
-#homepage note: the homepage here is not actually the index route
+#homepage note: the homepage here is not actually the index route. Index route is only showed to logged-in users (aka poll monitors)
 get "/" do
     puts "params: #{params}"
-
-#I don't think I need anything here because the news ticker will come from the layout.erb document
-
 view "new_address"
 end
 
@@ -129,8 +120,6 @@ puts "params: #{params}"
         )
 
         
-
-        puts "#{@new_polling_location} this is the text to reference"
         if @new_polling_location
             redirect "polling_locations/#{@new_polling_location[:id]}" 
         end
