@@ -37,14 +37,13 @@ before do
     puts "@poll_time_reports_desc is #{@poll_time_reports_desc}"
 
     @polling_times_table_reference = DB.from(:polling_times)
-
 end
 
 
 #homepage note: the homepage here is not actually the index route. Index route is only showed to logged-in users (aka poll monitors)
 get "/" do
     puts "params: #{params}"
-view "new_address"
+    view "new_address"
 end
 
 #take the user's address submission, bounce it off the google civics API, then decide what to do

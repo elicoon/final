@@ -81,12 +81,13 @@
                 <%= "#{location[:polling_name]}: " %>
         
                 <!-- then, the most recent time of the location id's reported time -->
-
+                <% times = @polling_times_table_reference.where(polling_location_id: location[:id]) %>
                 
-
-
+                <% ordered_times = times.order(Sequel.desc(:date_time_reported)) %>
+                <% time = ordered_times.to_a[0] %>
 
                 <!-- finally, symbol separating next one-->
+                <%= time[:line_time] %> minute(s)
                 <span class="glyphicon glyphicon-forward"></span> 
         
 
@@ -95,16 +96,6 @@
         </div>
     </div>
 </div>
-        <div>
-                <% times = @polling_times_table_reference.where(polling_location_id:1) %>
-                
-                <% ordered_times = times.order(Sequel.desc(:date_time_reported)) %>
-
-                <%= puts ordered_times.to_s %>
-        </div>
-
-                
-
 
     <div class="container mt-5">
       <%= yield %>

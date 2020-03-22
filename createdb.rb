@@ -43,9 +43,9 @@ polling_times_table = DB.from(:polling_times)
 polling_users_table = DB.from(:users)
 
 polling_users_table.insert(
-                    name: dummy user 1
-                    phone: 5555555555
-                    email: example@email.com
+                    name: 'dummy user 1',
+                    phone: '5555555555',
+                    email: 'example@email.com'
 )
 
 polling_locations_table.insert(polling_name: "Polling location 1's name", 
@@ -64,7 +64,7 @@ polling_locations_table.insert(polling_name: "Polling location 1's name",
                     polling_times_table.insert(
                         polling_location_id: 1,
                         voter_address: "Seed voter address",
-                        line_time: 1,
+                        line_time: rand(10..45),
                         date_time_reported: Time.now.to_i
                         )
 
