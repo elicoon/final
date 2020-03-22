@@ -64,7 +64,7 @@ polling_locations_table.insert(polling_name: "Polling location 1's name",
                     polling_times_table.insert(
                         polling_location_id: 1,
                         voter_address: "Seed voter address",
-                        line_time: rand(10..45),
+                        line_time: [10, 30, 45].sample,
                         date_time_reported: Time.now.to_i
                         )
 
@@ -84,7 +84,7 @@ polling_locations_table.insert(polling_name: "Polling location 2's name",
                     polling_times_table.insert(
                         polling_location_id: 2,
                         voter_address: "Seed voter address",
-                        line_time: 1,
+                        line_time: [10, 30, 45].sample,
                         date_time_reported: Time.now.to_i
                         )
 

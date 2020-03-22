@@ -68,9 +68,7 @@
         <b>Latest Line Times</b>
         </div>
         <div class="col-lg-auto">
-            <marquee class="scroll-text">Item 1 <span class="glyphicon glyphicon-forward"></span> 
-            Item 2 <span class="glyphicon glyphicon-forward"></span>  
-            Item 3 <span class="glyphicon glyphicon-forward"></span>  
+            <marquee class="scroll-text">
              
             <!-- news ticker @all_polls_asc is the polling locations table -->
             <!-- news ticker @polling_times_table_reference is the full time database -->
@@ -82,12 +80,11 @@
         
                 <!-- then, the most recent time of the location id's reported time -->
                 <% times = @polling_times_table_reference.where(polling_location_id: location[:id]) %>
-                
                 <% ordered_times = times.order(Sequel.desc(:date_time_reported)) %>
                 <% time = ordered_times.to_a[0] %>
+                <%= time[:line_time] %> minutes
 
                 <!-- finally, symbol separating next one-->
-                <%= time[:line_time] %> minute(s)
                 <span class="glyphicon glyphicon-forward"></span> 
         
 
