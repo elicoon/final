@@ -1,0 +1,34 @@
+<body>
+
+<%= pp @polling_locations_table %>
+<br><br>
+
+
+        
+        
+    <!-- polling place loop -->
+            
+    <div class="container"
+        
+        <% for poll in @polling_locations_table %>
+        <div class="row">
+            <div class="col">           
+                <a href="/poll_monitor/<%= poll[:id] %>"><%= poll[:polling_name]%></a>
+            </div>
+            <div class="col">
+                <%= poll[:polling_address]%>
+            </div>
+        </div>
+        <% end %>
+            
+         
+        
+    </div>
+
+
+
+
+
+
+
+</body>

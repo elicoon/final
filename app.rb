@@ -9,7 +9,7 @@ require "httparty"
 require "time"
 require "sinatra/cookies"
 require "geocoder" 
-require "forecast_io"                                                                       #
+require "forecast_io"                                                                 #
 connection_string = ENV['DATABASE_URL'] || "sqlite://#{Dir.pwd}/development.sqlite3"  #
 DB ||= Sequel.connect(connection_string)                                              #
 DB.loggers << Logger.new($stdout) unless DB.loggers.size > 0                          #
@@ -76,8 +76,18 @@ puts "params: #{params}"
             googleurl="https://www.googleapis.com/civicinfo/v2/voterinfo?address=#{@civic_api_address_format}&electionId=2000&key=#{@googlecivic_sid}"
 
         response = HTTParty.get(googleurl).parsed_response.to_hash
-        @poll_place_address_line1 = response["pollingLocations"][0]["address"]["line1"]
-        @full_response = response
+        puts "google civics response is #{response}"
+
+#need a check here to see if google civics had a response. If google civics returned an error, come back with that error
+
+
+# if response["error"]["message"] == "Failed to parse address"
+#     view "address_error"
+# else
+
+
+    @poll_place_address_line1 = response["pollingLocations"][0]["address"]["line1"]
+    @full_response = response
 
 
     #check if there's already a polling place with this address and adding a new entry to the database if it doesn't find a match
@@ -89,14 +99,37 @@ puts "params: #{params}"
             polling_name: "New polling location",
             polling_address: "#{@poll_place_address_line1}"
         )
+
+        
+    
         #doing this because setting a variable equal to the table insert just returns the id, not the full hash
         @new_polling_location = polling_locations_table.where(polling_address: @poll_place_address_line1).to_a[0]
+
+        #seeding issues for new location to avoid error
+        polling_issues_table.insert(
+            polling_location_id: @new_polling_location[:id],
+            voter_address: "Seed voter address",
+            issue_type: "Seed voter issue type",
+            issue_text: "Seed voter issue text",
+            date_time_reported: Time.now.to_i
+        )
+
+        #seeding times for new location to avoid error
+        polling_times_table.insert(
+            polling_location_id: @new_polling_location[:id],
+            voter_address: "Seed voter address",
+            line_time: 1,
+            date_time_reported: Time.now.to_i
+        )
+
+        
 
         puts "#{@new_polling_location} this is the text to reference"
         if @new_polling_location
             redirect "polling_locations/#{@new_polling_location[:id]}" 
         end
     end
+# end
 end
 
 
@@ -108,21 +141,20 @@ get "/polling_locations/:id" do
     cookies["poll_place_id"] = @poll[:id]
 
     #creating variables for wait times and issues to populate
-    @tot_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).sum(:line_time)
-    @count_wait_times = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).count(:line_time)
-    @avg_wait_time = @tot_wait_time/@count_wait_times
-    @recent_wait_time = polling_times_table.where(polling_location_id:cookies["poll_place_id"]).order(Sequel.desc(:line_time)).to_a[0]
-    @num_issues = polling_issues_table.where(polling_location_id:cookies["poll_place_id"]).count("issue_type")
+    @tot_wait_time = polling_times_table.where(polling_location_id: params[:id]).sum(:line_time)
+    @count_wait_times = polling_times_table.where(polling_location_id: params[:id]).count(:line_time)
+    @avg_wait_time = @tot_wait_time / @count_wait_times
+    @recent_wait_time = polling_times_table.where(polling_location_id: params[:id]).order(Sequel.desc(:line_time)).to_a[0]
+    @num_issues = polling_issues_table.where(polling_location_id: params[:id]).count("issue_type")
 
     #feeding setting up google maps api key
             @googlemaps_sid = ENV["GOOGLE_MAPS_SID"]
-            puts "print @my_address #{@my_address}"
-            location_search = Geocoder.search(@my_address)
-            puts "print location_search variable #{location_search}" 
+            puts "@my_address is #{@my_address}"
+            location_search = Geocoder.search("#{@my_address}")
+            puts "location search is #{location_search}"
             lat_long_array = location_search.first.coordinates # => [lat,long]
-            puts "print lat_long_array #{lat_long_array}"
             @lat_long = "(#{lat_long_array[0]},#{lat_long_array[1]})"
-            puts "print @lat_long #{@lat_long}"
+   
 
     view "test"
 end
@@ -149,9 +181,8 @@ post "/polling_locations/:id/time/create" do
     #feeding setting up google maps api key
             @googlemaps_sid = ENV["GOOGLE_MAPS_SID"]
             location_search = Geocoder.search(@my_address)
-            puts "print location_search variable #{location_search}" 
-            @lat_long = location_search.first # => [lat,long]
-            puts "print @lat_long #{@lat_long}"
+            lat_long_array = location_search.first.coordinates # => [lat,long]
+            @lat_long = "(#{lat_long_array[0]},#{lat_long_array[1]})"
 
     view "test"
 end
@@ -179,63 +210,39 @@ post "/polling_locations/:id/issue/create" do
     #feeding setting up google maps api key
             @googlemaps_sid = ENV["GOOGLE_MAPS_SID"]
             location_search = Geocoder.search(@my_address)
-            puts location_search 
-            @lat_long = location_search.first # => [lat,long]
-            puts @lat_long
-
+            lat_long_array = location_search.first.coordinates # => [lat,long]
+            @lat_long = "(#{lat_long_array[0]},#{lat_long_array[1]})"
     view "test"
 end
 
-#next, redirect to the show page because now we have the location id
-#think of this similarly to the users create from class 10
-#one option to keep the variable is to pass it through the URL with q
-#another option is to save it as a cookie and set a cookie to the address value
-
-# view "polling_location"
-# end
-
-# get "/polling_locations/:id" do
-#     puts "params #{params}"
-
-#     @users_table = users_table
-#     @polling_location = polling_locations_table.where(id: 
-
-# view
 
 
+#This is the list of all polling locations for poll monitors
+get "/poll_index" do
 
-#Polling Place Details, aka "show" route
-# get "/polling_locations/:id"
-#     puts "params: #{params}"
+@polling_locations_table = polling_locations_table.all.to_a
+puts "print @polling_locations_table #{@polling_locations_table}"
 
-#     @user_address = params["q"]
-    
-    #hit the google civics API here to submit the user's address and return an array that includes the relevant pieces of information
-    
-    # @polling_location_name = #grab the correct part of the google civic api array, the polling location name
+    view "poll_index"
+end
 
-    
-    #check our polling location database to see if the address exists. If yes, use it. If not, create one and return it.
+get "/poll_monitor/:id" do
 
-    #next, use our database to show the polling address, accessibility, and township (note that we could do this through the google API
-    #but this way we don't hit the API a bunch of times and potentially run up costs)
-
-    # @polling_location_name = polling_locations_table.where(polling_address: @)
-    # @polling_location_address = polling_locations_table.where(polling_name: @polling_location_name).to_a[0]
-    # @polling_location_accessible = #need to define
-    # @polling_location_township = #need to define
-
-    #next, use geocoder to satisfy assignment requirement
-    # location_search = Geocoder.search(@polling_location_address)
-    
-    #then convert the user's polling place to lat_long so we can feed it into the google maps API to satisfy that part of the requirement
-    # @polling_place_lat_long = location_search.first.coordinates # => [lat,long]
-    
+     puts "params: #{params}"
 
 
-    # @polling_name = polling_locations_table.where(id: 
-    # #need to 
-    # )
-    # @ = polling_times_table 
-    # @ = polling_issues_table
+    @poll = polling_locations_table.where(id: params[:id]).to_a[0]
 
+    #creating variables for wait times and issues to populate
+    @tot_wait_time = polling_times_table.where(polling_location_id: params[:id]).sum(:line_time)
+    @count_wait_times = polling_times_table.where(polling_location_id: params[:id]).count(:line_time)
+    @avg_wait_time = @tot_wait_time / @count_wait_times
+    @recent_wait_time = polling_times_table.where(polling_location_id: params[:id]).order(Sequel.desc(:line_time)).to_a[0]
+    @num_issues = polling_issues_table.where(polling_location_id: params[:id]).count("issue_type")
+
+    @issue_table = polling_issues_table.where(polling_location_id: params[:id])
+    @time_table = polling_times_table.where(polling_location_id: params[:id])
+   
+
+    view "poll_monitor_show"
+end

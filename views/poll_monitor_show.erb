@@ -1,0 +1,35 @@
+<h1>Welcome to your polling place.</h1>
+
+<%= pp @poll %>
+
+<br>
+<br>
+
+Polling Location: <%= @poll[:polling_name] %>
+
+<br>
+
+Polling Location Address: <%= @poll[:polling_address] %>
+
+<br>
+
+Accessible? <%= @poll[:accessible] %>
+
+<br>
+
+Township & Precinct: <%= @poll[:township] %>
+
+<br>
+
+Last reported wait time: <%= @recent_wait_time[:line_time] %> minutes
+
+<br>
+
+Avg reported wait time: <%= @avg_wait_time%> minutes
+
+<br>
+Total wait time: <%= @tot_wait_time%>
+<br>
+
+Issues reported: <%= @num_issues%> issues reported.
+

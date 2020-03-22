@@ -38,13 +38,48 @@ end
   
 # Insert dummy seed data
 polling_locations_table = DB.from(:polling_locations)
+polling_issues_table = DB.from(:polling_times)
+polling_times_table = DB.from(:polling_issues)
 
 polling_locations_table.insert(polling_name: "Polling location 1's name", 
                     polling_address: "Polling location 1's address",
                     accessible: "Yes",
                     township: "Kellogg township")
 
+                    polling_issues_table.insert(
+                        polling_location_id: 1,
+                        voter_address: "Seed voter address",
+                        issue_type: "Seed voter issue type",
+                        issue_text: "Seed voter issue text",
+                        date_time_reported: Time.now.to_i
+                        )
+
+                    polling_times_table.insert(
+                        polling_location_id: 1,
+                        voter_address: "Seed voter address",
+                        line_time: 1,
+                        date_time_reported: Time.now.to_i
+                        )
+
 polling_locations_table.insert(polling_name: "Polling location 2's name", 
                     polling_address: "Polling location 2's address",
                     accessible: "Yes",
                     township: "Evanston township")
+
+                    polling_issues_table.insert(
+                        polling_location_id: 2,
+                        voter_address: "Seed voter address",
+                        issue_type: "Seed voter issue type",
+                        issue_text: "Seed voter issue text",
+                        date_time_reported: Time.now.to_i
+                        )
+
+                    polling_times_table.insert(
+                        polling_location_id: 2,
+                        voter_address: "Seed voter address",
+                        line_time: 1,
+                        date_time_reported: Time.now.to_i
+                        )
+
+
+
