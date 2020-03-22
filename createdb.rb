@@ -36,10 +36,10 @@ DB.create_table! :users do
 end
 
   
-# Insert dummy seed data
+# Insert dummy seed data (including issues and times so the program doesn't error out if a poll monitor clicks on one of them)
 polling_locations_table = DB.from(:polling_locations)
-polling_issues_table = DB.from(:polling_times)
-polling_times_table = DB.from(:polling_issues)
+polling_issues_table = DB.from(:polling_issues)
+polling_times_table = DB.from(:polling_times)
 
 polling_locations_table.insert(polling_name: "Polling location 1's name", 
                     polling_address: "Polling location 1's address",
