@@ -11,10 +11,10 @@
     <h2>  
     <div class="container">
         <div class="row">
-            <div class="col">
+            <div class="col-6">
                 Polling Location Name
             </div>
-            <div class="col">
+            <div class="col-6">
                 Polling Location Address 
             </div>
         </div>
@@ -22,18 +22,20 @@
     </h2>
 
     <div class="container"
-        
-        <% for poll in @polling_locations_table %>
         <div class="row">
-            <div class="col">           
+        <% for poll in @polling_locations_table %>
+            <div class="row">
+            <div class="col-6">           
                 <a href="/poll_monitor/<%= poll[:id] %>"><%= poll[:polling_name]%></a>
+                
             </div>
-            <div class="col">
+            <div class="col-6">
                 <%= poll[:polling_address]%>
             </div>
-        </div>
-        <% end %>
             
+            </div>
+        <% end %>
+            </div>
          
         
     </div>
